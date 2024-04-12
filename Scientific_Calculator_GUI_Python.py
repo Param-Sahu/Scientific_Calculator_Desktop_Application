@@ -28,7 +28,7 @@ class GUI:
         self.entry_display.delete(0, tk.END)
         self.entry_display.insert(tk.END, current)
         result_label.config(text='Ans :  ' + str(current),borderwidth=2)
-        calculate(False)
+        calculate(False) # Calculating Expression(Result) after pressing backspace button and printing on result_label.
 
 
 root = tk.Tk() #Creating Window
@@ -52,11 +52,11 @@ def calculate(flag):
         if '×' in expression: # Replacing Multiplication Sign by Multiplication operator.
             expression = expression.replace('×','*')
         
-        if 'log' in expression:
-            expression = expression.replace('log','log10')
+        if 'log' in expression:  
+            expression = expression.replace('log','log10') # Changing 'log' by log10 (Base 10) function.
 
         if 'ln' in expression:  #Do not shift this code above if 'log' in.. , Because it wlll replace 'ln' to 'log' them 'log' to 'log10'
-            expression = expression.replace('ln','log')
+            expression = expression.replace('ln','log') # Changing 'ln' by log (Base e (2.718)) function.
 
         if angle_unit == 'Deg':
             trigno_list = ['sin(','cos(','tan(']
@@ -76,16 +76,17 @@ def calculate(flag):
             # Calculating result without pressing  eqaul_to button and answer will be displayed on answer_label. Flag value is False.
             result_label.config(text='Ans :  ' + str(result),anchor='w',borderwidth=2)
             result_label.grid(row=1,columnspan=4,column=0,padx= 2,pady=2)
-    except:
-        if flag == True:
+    except:  # Error Handling 
+        if flag == True:  # printing Error message on entry_display if any error encountered after pressing = button.
             main.entry_display.delete(0,tk.END)
             main.entry_display.insert(tk.END, "Error")
         else : 
-            result_label.config(text='',borderwidth=2)
+            result_label.config(text='',borderwidth=2) # Printing nothing on result_label in case of any error .
             result_label.grid(row=1,columnspan=4,column=0,padx=2,pady=2)
 
 
-def toggle_unit():
+def toggle_unit(): 
+    # Function for changing Degree to Radian and Vice-Versa.
     global angle_unit
     global unit_button
     if angle_unit == "Deg":
@@ -94,7 +95,7 @@ def toggle_unit():
     else:
         angle_unit = "Deg"
         unit_button.config(text=angle_unit)
-    calculate(False)
+    calculate(False) # Calculating Expression(Result) after pressing Deg/Rad Button.
 
 
 angle_unit = 'Deg'
@@ -125,6 +126,7 @@ for i, row in enumerate(button_values):
             btn.config(command=main.backspace)
         else:
             btn.config(command=lambda v=value: main.update_display(v))
-        btn.grid(row=i + 2, column=j, padx=5, pady=5)  
+        btn.grid(row=i + 2, column=j, padx=5, pady=5)   
+        # row = i+ 2 , because 0th row is reserved for entry_display and 1st row is reserved for result_label Label.
 
 root.mainloop()
