@@ -15,6 +15,7 @@ class GUI:
         current = self.entry_display.get()
         self.entry_display.delete(0, tk.END)
         self.entry_display.insert(tk.END, current + value)
+        self.entry_display.xview_moveto(1)
         calculate(False)
 
     def clear_display(self):
@@ -36,11 +37,16 @@ main = GUI(root,'Calculator') # Set Title of window and Calculator window is ass
 
 
 # Creating Entry Display 
-entry_display = tk.Entry(root, width=45, borderwidth=2,font='Arial 20') # Creating Entry Display
+entry_display = tk.Entry(root, width=35, borderwidth=2,font='Arial 20') # Creating Entry Display
 entry_display.bind("<Key>","break") # Disable Keyboard Interrupts
-entry_display.grid(row=0, column=0, columnspan=6, padx=10, pady=10) # Position of Entry Display
-main.entry(entry_display)  # Assigning entry-display of calculator window to main for modifiying.
+entry_display.grid(row=0, column=0, columnspan=5, padx=10, pady=10,sticky = 'ew') # Position of Entry Display
+main.entry(entry_display)  # Assigning entry_display of calculator window to main for modifiying.
 
+scrollbar = tk.Scrollbar(root, orient='horizontal', command=entry_display.xview)
+scrollbar.grid(row=0, column=5,sticky='ew')
+
+# Configure the Entry widget to communicate with the Scrollbar
+entry_display.config(xscrollcommand=scrollbar.set)
 # Creating Result Label below entry display
 result_label = tk.Label(root,borderwidth=2,anchor='w',font = "Arial 17")
 result_label.grid(row=1,columnspan=4,column=0,padx=2,pady=2)
@@ -51,22 +57,20 @@ def calculate(flag):
         expression = main.entry_display.get()
         if '×' in expression: # Replacing Multiplication Sign by Multiplication operator.
             expression = expression.replace('×','*')
-        
-        if 'log' in expression:  
-            expression = expression.replace('log','log10') # Changing 'log' by log10 (Base 10) function.
 
-        if 'ln' in expression:  #Do not shift this code above if 'log' in.. , Because it wlll replace 'ln' to 'log' them 'log' to 'log10'
-            expression = expression.replace('ln','log') # Changing 'ln' by log (Base e (2.718)) function.
-
-        if angle_unit == 'Deg':
-            trigno_list = ['sin(','cos(','tan(']
+        if angle_unit == 'Deg':  
+            trigno_list = ['sin(','cos(','tan('] # list for trignometric function for replacement.
             for trigno in trigno_list:
                 if trigno in expression:
                     expression = expression.replace(trigno,trigno+'(pi/180)*') # Converting Input Degree angle into Radian.
 
 
-        result = round( eval( expression ) ,  10) # Finally Performing Calulation (Evaluating) and round off upto 10 digits.
-            
+        function_dict = {'ln':log,'log':log10,'sin':sin,'cos':cos,'tan':tan,'pi':pi,'e':e,'sqrt':sqrt,'cbrt':cbrt}
+        result = round( eval( expression , function_dict) ,  10) # Finally Performing Calulation (Evaluating) and round off upto 10 digits.
+        ''' 
+        By passing function_dict as globals argument we ensure that eval function can "only" access these function present in dictionary.
+        If we do not use function_dict , eval function can access all functions (built-in or user defined) which cause insecurity of code.
+        '''
 
 
         if flag == True:  # When = button is pressed the flag value is True and answer will displayed on entry_display screen.
