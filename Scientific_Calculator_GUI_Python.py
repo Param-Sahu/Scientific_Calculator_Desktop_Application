@@ -77,8 +77,8 @@ def calculate(flag):
 
 
         function_dict = {'ln':log,'log':log10,'sin':sin,'cos':cos,'tan':tan,
-                         'pi':pi,'e':e,'sqrt':sqrt,'cbrt':cbrt,
-                         'facto':factorial,'²':''}
+                        'pi':pi,'e':e,'sqrt':sqrt,'cbrt':cbrt,
+                        'facto':factorial}
         result = round( eval( expression , function_dict) ,  10) # Finally Performing Calulation (Evaluating) and round off upto 10 digits.
         ''' 
         By passing function_dict as globals argument we ensure that eval function can "only" access these function present in dictionary.
