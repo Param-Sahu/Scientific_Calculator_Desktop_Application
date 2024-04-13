@@ -1,5 +1,5 @@
 import tkinter as tk
-from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e
+from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e,factorial
 
 class GUI:
     
@@ -15,7 +15,7 @@ class GUI:
         current = self.entry_display.get()
         self.entry_display.delete(0, tk.END)
         self.entry_display.insert(tk.END, current + value)
-        self.entry_display.xview_moveto(1)
+        self.entry_display.xview_moveto(1) # Automatically shift Scrollbar 
         calculate(False)
 
     def clear_display(self):
@@ -33,6 +33,7 @@ class GUI:
 
 
 root = tk.Tk() #Creating Window
+root.iconbitmap('calculator.ico')
 main = GUI(root,'Calculator') # Set Title of window and Calculator window is assign to main variable.
 
 
@@ -42,6 +43,7 @@ entry_display.bind("<Key>","break") # Disable Keyboard Interrupts
 entry_display.grid(row=0, column=0, columnspan=5, padx=10, pady=10,sticky = 'ew') # Position of Entry Display
 main.entry(entry_display)  # Assigning entry_display of calculator window to main for modifiying.
 
+# Creating Scrollbar for Entery Display.
 scrollbar = tk.Scrollbar(root, orient='horizontal', command=entry_display.xview)
 scrollbar.grid(row=0, column=5,sticky='ew')
 
@@ -57,6 +59,15 @@ def calculate(flag):
         expression = main.entry_display.get()
         if '×' in expression: # Replacing Multiplication Sign by Multiplication operator.
             expression = expression.replace('×','*')
+        
+        if '^' in expression:
+            expression = expression.replace('^','**')
+
+        if '²' in expression:
+            expression = expression.replace('²','**2')
+        
+        if '³' in expression:
+            expression = expression.replace('³','**3')
 
         if angle_unit == 'Deg':  
             trigno_list = ['sin(','cos(','tan('] # list for trignometric function for replacement.
@@ -65,7 +76,9 @@ def calculate(flag):
                     expression = expression.replace(trigno,trigno+'(pi/180)*') # Converting Input Degree angle into Radian.
 
 
-        function_dict = {'ln':log,'log':log10,'sin':sin,'cos':cos,'tan':tan,'pi':pi,'e':e,'sqrt':sqrt,'cbrt':cbrt}
+        function_dict = {'ln':log,'log':log10,'sin':sin,'cos':cos,'tan':tan,
+                         'pi':pi,'e':e,'sqrt':sqrt,'cbrt':cbrt,
+                         'facto':factorial,'²':''}
         result = round( eval( expression , function_dict) ,  10) # Finally Performing Calulation (Evaluating) and round off upto 10 digits.
         ''' 
         By passing function_dict as globals argument we ensure that eval function can "only" access these function present in dictionary.
@@ -105,17 +118,17 @@ def toggle_unit():
 angle_unit = 'Deg'
 # Button values
 button_values = [
-    ('7', '8', '9', '/',angle_unit,'cbrt('),
-    ('4', '5', '6', '×','sin(','ln('),
-    ('1', '2', '3', '-','cos(','log('),
-    ('0', 'C', '=', '+','tan(','pi'),
-    ('<<', '(', ')', '.','sqrt(','e')
+    ('7', '8', '9', '/',angle_unit,'cbrt(','facto('),
+    ('4', '5', '6', '×','sin(','ln(','^'),
+    ('1', '2', '3', '-','cos(','log(','²'),
+    ('0', 'C', '=', '+','tan(','pi','³'),
+    ('<<', '(', ')', '.','sqrt(','e','HCF&LCM')
 ]
 
 # Creating buttons
 for i, row in enumerate(button_values):
     for j, value in enumerate(row):
-
+        
         if i==0 and j==4:
             unit_button = tk.Button(root,text=value,command=toggle_unit,padx=40,pady=20,font='Arial 12')
             unit_button.grid(row=i+2,column=j,padx=5,pady=5)
@@ -128,6 +141,8 @@ for i, row in enumerate(button_values):
             btn.config(command=main.clear_display)
         elif value == '<<':
             btn.config(command=main.backspace)
+        elif value == "HCF&LCM":
+            pass
         else:
             btn.config(command=lambda v=value: main.update_display(v))
         btn.grid(row=i + 2, column=j, padx=5, pady=5)   
