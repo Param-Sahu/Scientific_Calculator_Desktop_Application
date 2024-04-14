@@ -81,7 +81,7 @@ def calculate(flag):
                         'facto':factorial}
         result = round( eval( expression , function_dict) ,  10) # Finally Performing Calulation (Evaluating) and round off upto 10 digits.
         ''' 
-        By passing function_dict as globals argument we ensure that eval function can "only" access these function present in dictionary.
+        By passing function_dict as 'globals' argument we ensure that eval function can "only" access these function present in dictionary.
         If we do not use function_dict , eval function can access all functions (built-in or user defined) which cause insecurity of code.
         '''
 
@@ -118,11 +118,11 @@ def toggle_unit():
 angle_unit = 'Deg'
 # Button values
 button_values = [
-    ('7', '8', '9', '/',angle_unit,'cbrt(','facto('),
-    ('4', '5', '6', '×','sin(','ln(','^'),
-    ('1', '2', '3', '-','cos(','log(','²'),
-    ('0', 'C', '=', '+','tan(','pi','³'),
-    ('<<', '(', ')', '.','sqrt(','e','HCF&LCM')
+    ('  7', '8', '9', '/',angle_unit,'cbrt(','facto('),
+    ('  4', '5', '6', '×','sin( ','  ln( ','    ^   '),
+    ('  1', '2', '3', ' -','cos(',' log(','    ²   '),
+    ('  0', 'C', '=', '+','tan( ','  pi ','    ³   '),
+    ('<<', '(', ')', ' .','sqrt(','  e  ','HCF & LCM')
 ]
 
 # Creating buttons
@@ -133,6 +133,10 @@ for i, row in enumerate(button_values):
             unit_button = tk.Button(root,text=value,command=toggle_unit,padx=40,pady=20,font='Arial 12')
             unit_button.grid(row=i+2,column=j,padx=5,pady=5)
             continue
+        if value == "HCF & LCM":
+            btn = tk.Button(root,text=value,padx=25,pady=25)
+            btn.grid(row=i+2,column=j)
+            continue
 
         btn = tk.Button(root, text=value, padx=40, pady=20,font= 'Arial 12')
         if value == '=':
@@ -141,11 +145,9 @@ for i, row in enumerate(button_values):
             btn.config(command=main.clear_display)
         elif value == '<<':
             btn.config(command=main.backspace)
-        elif value == "HCF&LCM":
-            pass
         else:
-            btn.config(command=lambda v=value: main.update_display(v))
-        btn.grid(row=i + 2, column=j, padx=5, pady=5)   
+            btn.config(command=lambda v=value.strip(): main.update_display(v)) #strip() function removed white space which is used for adjustment.
+        btn.grid(row=i + 2, column=j)   
         # row = i+ 2 , because 0th row is reserved for entry_display and 1st row is reserved for result_label Label.
 
 root.mainloop()
