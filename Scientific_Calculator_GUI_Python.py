@@ -1,5 +1,5 @@
 import tkinter as tk
-from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e,factorial
+from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e,factorial,gcd,lcm
 
 class GUI:
     
@@ -23,35 +23,18 @@ class GUI:
         result_label.config(text='',borderwidth=2)
         self.entry_display.delete(0, tk.END)
 
+
     def backspace(self):
         global result_label
         current = self.entry_display.get()[:-1]
         self.entry_display.delete(0, tk.END)
         self.entry_display.insert(tk.END, current)
         result_label.config(text='Ans :  ' + str(current),borderwidth=2)
+        self.entry_display.xview_moveto(1) # Automatically shift Scrollbar after pressing backspace button.
         calculate(False) # Calculating Expression(Result) after pressing backspace button and printing on result_label.
+    
+    # GUI Class End
 
-
-root = tk.Tk() #Creating Window
-root.iconbitmap('calculator.ico')
-main = GUI(root,'Calculator') # Set Title of window and Calculator window is assign to main variable.
-
-
-# Creating Entry Display 
-entry_display = tk.Entry(root, width=35, borderwidth=2,font='Arial 20') # Creating Entry Display
-entry_display.bind("<Key>","break") # Disable Keyboard Interrupts
-entry_display.grid(row=0, column=0, columnspan=5, padx=10, pady=10,sticky = 'ew') # Position of Entry Display
-main.entry(entry_display)  # Assigning entry_display of calculator window to main for modifiying.
-
-# Creating Scrollbar for Entery Display.
-scrollbar = tk.Scrollbar(root, orient='horizontal', command=entry_display.xview)
-scrollbar.grid(row=0, column=5,sticky='ew')
-
-# Configure the Entry widget to communicate with the Scrollbar
-entry_display.config(xscrollcommand=scrollbar.set)
-# Creating Result Label below entry display
-result_label = tk.Label(root,borderwidth=2,anchor='w',font = "Arial 17")
-result_label.grid(row=1,columnspan=4,column=0,padx=2,pady=2)
 
 def calculate(flag):
     global result_label,angle_unit
@@ -93,6 +76,9 @@ def calculate(flag):
             # Calculating result without pressing  eqaul_to button and answer will be displayed on answer_label. Flag value is False.
             result_label.config(text='Ans :  ' + str(result),anchor='w',borderwidth=2)
             result_label.grid(row=1,columnspan=4,column=0,padx= 2,pady=2)
+        
+        # Try block end.
+
     except:  # Error Handling 
         if flag == True:  # printing Error message on entry_display if any error encountered after pressing = button.
             main.entry_display.delete(0,tk.END)
@@ -100,6 +86,8 @@ def calculate(flag):
         else : 
             result_label.config(text='',borderwidth=2) # Printing nothing on result_label in case of any error .
             result_label.grid(row=1,columnspan=4,column=0,padx=2,pady=2)
+    
+    # calculate function end.
 
 
 def toggle_unit(): 
@@ -113,7 +101,90 @@ def toggle_unit():
         angle_unit = "Deg"
         unit_button.config(text=angle_unit)
     calculate(False) # Calculating Expression(Result) after pressing Deg/Rad Button.
+    # toggle_unit function end.
 
+
+def calculate_HCFLCM(functions):
+    
+    try:
+        global label_hcf,label_lcm
+        window = functions
+        #Function to Calculate HCF and LCM.
+        num = (window.entry_display.get()).split(sep=',')
+        numbers = [int(x) for x in num]
+        HCF = gcd(*numbers)
+        LCM = lcm(*numbers)
+        label_hcf.config(text=f'HCF : {HCF}')
+        label_hcf.grid(row=7,column=0,columnspan=3)
+        label_lcm.config(text=f'LCM : {LCM}')
+        label_lcm.grid(row=8,column=0,columnspan=3)
+    except:
+        label_hcf.config(text='HCF : ')
+        label_lcm.config(text='LCM : ')
+
+
+def open_hcf_lcm_window():
+    global entry,label_hcf,label_lcm
+    hcf_lcm_window = tk.Tk() # Creating Window for HCF and LCM calculator.
+    label_hcf = tk.Label(hcf_lcm_window,text='HCF : ',font='Arial 12')
+    label_lcm = tk.Label(hcf_lcm_window,text='LCM : ',font='Arial 12')
+    window_function = GUI(hcf_lcm_window,"HCF & LCM Calculator") # Accessing GUI Function like entry, clear_display etc.
+    info_label = tk.Label(hcf_lcm_window,text=f'Enter comma seperated values',font='Calibri 13')
+    info_label.grid(row=0,column=0,columnspan=3)
+    entry = tk.Entry(hcf_lcm_window,width=30,borderwidth=5,font='Arial 12')
+    entry.grid(row=1,column=0,columnspan=3)
+    window_function.entry(entry)  # Accessing Entry widget in GUI Class.
+
+    # Defining Buttons
+    Buttons = [
+                        ('7', '8', '9'),
+                        ('4', '5', '6'),
+                        ('1', '2', '3'),
+                        ('0', 'C','<<'),
+                        (',','ANS')
+                        ]
+    # Arranging Buttons
+    for i,row in enumerate(Buttons):
+        for j,value in enumerate(row):
+            if value == 'C':
+                button  = tk.Button(hcf_lcm_window,text=value,command=window_function.clear_display,padx=38,pady=20,font='Arial 12')
+            elif value == '<<':
+                button = tk.Button(hcf_lcm_window,text=value,command=window_function.backspace,padx=35,pady=20,font='Arial 12')
+            elif value == 'ANS':
+                button = tk.Button(hcf_lcm_window,text=value,command=lambda v =window_function:calculate_HCFLCM(v),padx=30,pady=20,font='Arial 12')
+            else : 
+                button = tk.Button(hcf_lcm_window,text=value,command=lambda  V = value: window_function.update_display(V),padx=40,pady=20,font='Arial 12')
+                # lambda V = value : remember all values at their particular time ,
+                # If V not used and direct value pass as argument it will remember only last value.
+
+            button.grid(row=i+2,column=j)
+
+
+
+
+
+# Graphical User Interface Creation
+
+root = tk.Tk() #Creating Window
+root.iconbitmap('calculator.ico') # Set Icon image of Calculator Window.
+main = GUI(root,'Calculator') # Set Title of window and Calculator window is assign to main variable.
+
+
+# Creating Entry Display 
+entry_display = tk.Entry(root, width=35, borderwidth=2,font='Arial 20') # Creating Entry Display
+entry_display.bind("<Key>","break") # Disable Keyboard Interrupts
+entry_display.grid(row=0, column=0, columnspan=5, padx=10, pady=10,sticky = 'ew') # Position of Entry Display
+main.entry(entry_display)  # Assigning entry_display of calculator window to main for modifiying.
+
+# Creating Scrollbar for Entery Display.
+scrollbar = tk.Scrollbar(root, orient='horizontal', command=entry_display.xview)
+scrollbar.grid(row=0, column=5,sticky='ew')
+
+# Configure the Entry widget to communicate with the Scrollbar
+entry_display.config(xscrollcommand=scrollbar.set)
+# Creating Result Label below entry display
+result_label = tk.Label(root,borderwidth=2,anchor='w',font = "Arial 17")
+result_label.grid(row=1,columnspan=4,column=0,padx=2,pady=2)
 
 angle_unit = 'Deg'
 # Button values
@@ -125,6 +196,7 @@ button_values = [
     ('<<', '(', ')', ' .','sqrt(','  e  ','HCF & LCM')
 ]
 
+
 # Creating buttons
 for i, row in enumerate(button_values):
     for j, value in enumerate(row):
@@ -134,7 +206,7 @@ for i, row in enumerate(button_values):
             unit_button.grid(row=i+2,column=j,padx=5,pady=5)
             continue
         if value == "HCF & LCM":
-            btn = tk.Button(root,text=value,padx=25,pady=25)
+            btn = tk.Button(root,text=value,padx=25,pady=25,command=open_hcf_lcm_window)
             btn.grid(row=i+2,column=j)
             continue
 
