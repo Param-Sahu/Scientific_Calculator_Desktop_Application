@@ -149,7 +149,7 @@ def open_hcf_lcm_window():
     for i,row in enumerate(Buttons):
         for j,value in enumerate(row):
             if value == 'C':
-                button  = tk.Button(hcf_lcm_window,text=value,command=window_function.clear_display,padx=38,pady=20,font='Arial 12')
+                button  = tk.Button(hcf_lcm_window,text=value,command= lambda : entry.delete(0,tk.END),padx=38,pady=20,font='Arial 12')
             elif value == '<<':
                 button = tk.Button(hcf_lcm_window,text=value,command=window_function.backspace,padx=35,pady=20,font='Arial 12')
             elif value == 'ANS':
