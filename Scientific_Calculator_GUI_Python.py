@@ -1,5 +1,7 @@
 import tkinter as tk
 from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e,factorial,gcd,lcm
+import matrix_determinant 
+import matrix_inverse
 
 class GUI:
     
@@ -147,7 +149,7 @@ def open_hcf_lcm_window():
     for i,row in enumerate(Buttons):
         for j,value in enumerate(row):
             if value == 'C':
-                button  = tk.Button(hcf_lcm_window,text=value,command=window_function.clear_display,padx=38,pady=20,font='Arial 12')
+                button  = tk.Button(hcf_lcm_window,text=value,command= lambda : entry.delete(0,tk.END),padx=38,pady=20,font='Arial 12')
             elif value == '<<':
                 button = tk.Button(hcf_lcm_window,text=value,command=window_function.backspace,padx=35,pady=20,font='Arial 12')
             elif value == 'ANS':
@@ -186,11 +188,14 @@ entry_display.config(xscrollcommand=scrollbar.set)
 result_label = tk.Label(root,borderwidth=2,anchor='w',font = "Arial 17")
 result_label.grid(row=1,columnspan=4,column=0,padx=2,pady=2)
 
+matrix_label = tk.Label(root,text='Matrix Algebra',font='Arial 15')
+matrix_label.grid(row=1,column=7)
+
 angle_unit = 'Deg'
 # Button values
 button_values = [
-    ('  7', '8', '9', '/',angle_unit,'cbrt(','facto('),
-    ('  4', '5', '6', '×','sin( ','  ln( ','    ^   '),
+    ('  7', '8', '9', '/',angle_unit,'cbrt(','facto(','Determinant'),
+    ('  4', '5', '6', '×','sin( ','  ln( ','    ^   ','Inverse'),
     ('  1', '2', '3', ' -','cos(',' log(','    ²   '),
     ('  0', 'C', '=', '+','tan( ','  pi ','    ³   '),
     ('<<', '(', ')', ' .','sqrt(','  e  ','HCF & LCM')
@@ -215,6 +220,10 @@ for i, row in enumerate(button_values):
             btn.config(command=lambda equal_to_flag = True: calculate(equal_to_flag))
         elif value == 'C':
             btn.config(command=main.clear_display)
+        elif value == "Determinant":
+            btn.config(command=matrix_determinant.determinant)
+        elif value == "Inverse":
+            btn.config(text='   Inverse    ',command= matrix_inverse.inverse)
         elif value == '<<':
             btn.config(command=main.backspace)
         else:
