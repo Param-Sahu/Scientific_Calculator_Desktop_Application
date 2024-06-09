@@ -1,6 +1,8 @@
 import tkinter as tk
 from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e,factorial,gcd,lcm,exp
-import matrix
+import matrix_determinant
+import matrix_inverse
+import matrix_eigen_value
 
 class GUI:
     
@@ -243,11 +245,11 @@ for i, row in enumerate(button_values):
         elif value == 'C':
             btn.config(command=main.clear_display)
         elif value == "Determinant":
-            btn.config(text=' Determinant ',command=matrix.determinant)
+            btn.config(text=' Determinant ',command=matrix_determinant.determinant)
         elif value == "Inverse":
-            btn.config(text='     Inverse      ',command= matrix.inverse)
+            btn.config(text='     Inverse      ',command= matrix_inverse.inverse)
         elif value == "Eigen Value":
-            btn.config(text='Eigen Values',command= matrix.eigen_values)
+            btn.config(text='Eigen Values',command= matrix_eigen_value.eigen_values)
         elif value == "Average Calculator":
             btn.config(text='Average Calculator',font='Calibri 13',padx=20,pady=17,command= lambda : open_window('avg','Average Calculator'))
         elif value == '<<':

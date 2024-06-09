@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import numpy as np
 
-def calculate_matrix(flag):
+def calculate_determinant():
     global matrix_size,entry_2x2,entry_3x3,root,message
     if matrix_size.get() == '2x2':
         try:
@@ -12,24 +12,8 @@ def calculate_matrix(flag):
             a22 = float(entry_2x2[1][1].get())
             matrix = np.array([[a11, a12], [a21, a22]])
             det = np.linalg.det(matrix)
-            if flag == 'Determinant':
-                message.config(text=f'Determinant is:  {det:.2f}',font='Arial 12')
-            elif flag == 'Inverse Matrix':
-                if det == 0 :
-                    message.config(text='Determinant is zero, Inverse of Matrix is not Possible.')
-                else:
-                    matrix_inverse = np.linalg.inv(matrix)
-                    result_text = ''
-                    result_text = "Inverse Matrix:\n\n"
-                    for row in matrix_inverse:
-                        result_text += '   '.join(f"{num:.2f}" for num in row) + "\n\n"
-                    message.config(text=result_text,font='Arial 12')
-            elif flag == 'Eigen Value':
-                eigen_values = list(np.linalg.eig(matrix).eigenvalues)
-                message.config(text=f'Eigen Values are : \n\n {(eigen_values[0]):.2f} \n\n{(eigen_values[1]):.2f}',font='Arial 12')
-            
+            message.config(text=f'Determinant is: {det:.2f}',font='Calibri 13')
             message.grid(row=5,column=0,columnspan=2)
-
         except ValueError:
             messagebox.showerror("Input error", "Please enter valid numbers.")
     elif matrix_size.get() == '3x3':
@@ -45,23 +29,9 @@ def calculate_matrix(flag):
             a33 = float(entry_3x3[2][2].get())
             matrix = np.array([[a11, a12, a13], [a21, a22, a23], [a31, a32, a33]])
             det = np.linalg.det(matrix)
-            if flag == 'Determinant':
-                message.config(text=f'Determinant is:  {det:.2f}',font='Arial 12')
-            elif flag == 'Inverse Matrix':
-                if det == 0 :
-                    message.config(text='Determinant is zero, Inverse of Matrix is not Possible.')
-                else:
-                    matrix_inverse = np.linalg.inv(matrix)
-                    result_text = ''
-                    result_text = "Inverse Matrix:\n\n"
-                    for row in matrix_inverse:
-                        result_text += '   '.join(f"{num:.2f}" for num in row) + "\n\n"
-                    message.config(text=result_text,font='Arial 12')
-            elif flag == 'Eigen Value':
-                eigen_values = list(np.linalg.eig(matrix).eigenvalues)
-                message.config(text=f'Eigen Values are : \n\n {(eigen_values[0]):.2f} \n\n {(eigen_values[1]):.2f} \n\n {(eigen_values[2]):.2f} ',font='Arial 12')
-
+            message.config(text=f'The determinant is: {det:.2f}',font='Calibri 13')
             message.grid(row=5,column=0,columnspan=3)
+            #messagebox.showinfo("Determinant", f"The determinant is: {det:.2f}")
         except ValueError:
             messagebox.showerror("Input error", "Please enter valid numbers.")
 
@@ -84,11 +54,11 @@ def update_matrix_entries():
                 entry_3x3[i][j].grid(row=i+1, column=j, padx=2, pady=2)
     message.config(text='')
 
-def matrix_GUI(title ,calculate):
+def determinant():
     global matrix_size,entry_2x2,entry_3x3,root,message
     # Initialize the main window
     root = tk.Tk()
-    root.title(title)
+    root.title("Matrix Determinant Calculator")
 
     # Dropdown menu for selecting matrix size
     matrix_size = tk.StringVar(root)
@@ -105,27 +75,13 @@ def matrix_GUI(title ,calculate):
     message = tk.Label(root,text='')
     # Placeholders initially for 2x2 matrix
     update_matrix_entries()
-    
-    # Button to calculate 
-    calc_button = tk.Button(root, text=f"Calculate {calculate}", command=lambda :calculate_matrix(calculate),font='Calibri 13')
+
+    # Button to calculate determinant
+    calc_button = tk.Button(root, text="Calculate Determinant", command=calculate_determinant,font='Calibri 13')
     calc_button.grid(row=4, column=0, columnspan=3, pady=10)
 
     # Run the main loop
     root.mainloop()
 
-def determinant():
-    matrix_GUI(title='Matrix Determinant Calculator',calculate='Determinant')
-
-def inverse():
-    matrix_GUI(title="Inverse Matrix Calculator",calculate='Inverse Matrix')
-    
-def eigen_values():
-    matrix_GUI(title="Matrix Eigen Value Calculator",calculate='Eigen Value')
-
-
 if __name__ == "__main__":
-    # Funtions for Testing. Test one function at a time, Remaining other functions commented.
     determinant()
-    #inverse()
-    #eigen_values()
-    pass
