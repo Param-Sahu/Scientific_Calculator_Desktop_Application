@@ -132,7 +132,7 @@ def calculate_average(functions):
         num = (functions.entry_display.get()).split(sep=',')
         while '' in num:
             num.remove('')
-        numbers = [int(x) for x in num]
+        numbers = [float(x) for x in num]
         average = sum(numbers)/len(numbers)
         label_avg.config(text=f'Average :  {average}')
         label_avg.grid(row=7,column=0,columnspan=3)
