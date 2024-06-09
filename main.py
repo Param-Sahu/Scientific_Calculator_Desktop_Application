@@ -1,7 +1,6 @@
 import tkinter as tk
-from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e,factorial,gcd,lcm
-import matrix_determinant 
-import matrix_inverse
+from math import sin,cos,tan,log,log10,cbrt,sqrt,pi,e,factorial,gcd,lcm,exp
+import matrix
 
 class GUI:
     
@@ -63,7 +62,7 @@ def calculate(flag):
 
         function_dict = {'ln':log,'log':log10,'sin':sin,'cos':cos,'tan':tan,
                         'pi':pi,'e':e,'sqrt':sqrt,'cbrt':cbrt,
-                        'facto':factorial}
+                        'facto':factorial,'exp':exp}
         result = round( eval( expression , function_dict) ,  10) # Finally Performing Calulation (Evaluating) and round off upto 10 digits.
         ''' 
         By passing function_dict as 'globals' argument we ensure that eval function can "only" access these function present in dictionary.
@@ -113,6 +112,8 @@ def calculate_HCFLCM(functions):
         window = functions
         #Function to Calculate HCF and LCM.
         num = (window.entry_display.get()).split(sep=',')
+        while '' in num:
+            num.remove('')
         numbers = [int(x) for x in num]
         HCF = gcd(*numbers)
         LCM = lcm(*numbers)
@@ -123,17 +124,35 @@ def calculate_HCFLCM(functions):
     except:
         label_hcf.config(text='HCF : ')
         label_lcm.config(text='LCM : ')
+    # Calculate HCF LCM function End.
+
+def calculate_average(functions):
+    try :
+        global label_avg
+        num = (functions.entry_display.get()).split(sep=',')
+        while '' in num:
+            num.remove('')
+        numbers = [int(x) for x in num]
+        average = sum(numbers)/len(numbers)
+        label_avg.config(text=f'Average :  {average}')
+        label_avg.grid(row=7,column=0,columnspan=3)
+    except:
+        label_avg.config(text='Average : ')
+    
 
 
-def open_hcf_lcm_window():
-    global entry,label_hcf,label_lcm
-    hcf_lcm_window = tk.Tk() # Creating Window for HCF and LCM calculator.
-    label_hcf = tk.Label(hcf_lcm_window,text='HCF : ',font='Arial 12')
-    label_lcm = tk.Label(hcf_lcm_window,text='LCM : ',font='Arial 12')
-    window_function = GUI(hcf_lcm_window,"HCF & LCM Calculator") # Accessing GUI Function like entry, clear_display etc.
-    info_label = tk.Label(hcf_lcm_window,text=f'Enter comma seperated values',font='Calibri 13')
+def open_window(flag,title):
+    global entry,label_hcf,label_lcm,label_avg,new_window
+    new_window = tk.Tk() # Creating Window for HCF and LCM calculator.
+    if flag == 'hcflcm':
+        label_hcf = tk.Label(new_window,text='HCF : ',font='Arial 12')
+        label_lcm = tk.Label(new_window,text='LCM : ',font='Arial 12')
+    elif flag == 'avg':
+        label_avg = tk.Label(new_window,text='Average : ',font='Arial 12')
+    window_function = GUI(new_window,title) # Accessing GUI Function like entry, clear_display etc.
+    info_label = tk.Label(new_window,text=f'Enter comma seperated values',font='Calibri 13')
     info_label.grid(row=0,column=0,columnspan=3)
-    entry = tk.Entry(hcf_lcm_window,width=30,borderwidth=5,font='Arial 12')
+    entry = tk.Entry(new_window,width=30,borderwidth=5,font='Arial 12')
     entry.grid(row=1,column=0,columnspan=3)
     window_function.entry(entry)  # Accessing Entry widget in GUI Class.
 
@@ -149,13 +168,16 @@ def open_hcf_lcm_window():
     for i,row in enumerate(Buttons):
         for j,value in enumerate(row):
             if value == 'C':
-                button  = tk.Button(hcf_lcm_window,text=value,command= lambda : entry.delete(0,tk.END),padx=38,pady=20,font='Arial 12')
+                button  = tk.Button(new_window,text=value,command= lambda : entry.delete(0,tk.END),padx=38,pady=20,font='Arial 12')
             elif value == '<<':
-                button = tk.Button(hcf_lcm_window,text=value,command=window_function.backspace,padx=35,pady=20,font='Arial 12')
+                button = tk.Button(new_window,text=value,command=window_function.backspace,padx=35,pady=20,font='Arial 12')
             elif value == 'ANS':
-                button = tk.Button(hcf_lcm_window,text=value,command=lambda v =window_function:calculate_HCFLCM(v),padx=30,pady=20,font='Arial 12')
+                if flag == 'hcflcm':
+                    button = tk.Button(new_window,text=value,command=lambda v =window_function:calculate_HCFLCM(v),padx=30,pady=20,font='Arial 12')
+                elif flag == 'avg':
+                    button = tk.Button(new_window,text=value,command=lambda v =window_function:calculate_average(v),padx=30,pady=20,font='Arial 12')                    
             else : 
-                button = tk.Button(hcf_lcm_window,text=value,command=lambda  V = value: window_function.update_display(V),padx=40,pady=20,font='Arial 12')
+                button = tk.Button(new_window,text=value,command=lambda  V = value: window_function.update_display(V),padx=40,pady=20,font='Arial 12')
                 # lambda V = value : remember all values at their particular time ,
                 # If V not used and direct value pass as argument it will remember only last value.
 
@@ -188,17 +210,17 @@ entry_display.config(xscrollcommand=scrollbar.set)
 result_label = tk.Label(root,borderwidth=2,anchor='w',font = "Arial 17")
 result_label.grid(row=1,columnspan=4,column=0,padx=2,pady=2)
 
-matrix_label = tk.Label(root,text='Matrix Algebra',font='Arial 15')
-matrix_label.grid(row=1,column=7)
+special_label = tk.Label(root,text='Advanced Calculators',font='Arial 14')
+special_label.grid(row=1,column=7)
 
 angle_unit = 'Deg'
 # Button values
 button_values = [
     ('  7', '8', '9', '/',angle_unit,'cbrt(','facto(','Determinant'),
     ('  4', '5', '6', '×','sin( ','  ln( ','    ^   ','Inverse'),
-    ('  1', '2', '3', ' -','cos(',' log(','    ²   '),
-    ('  0', 'C', '=', '+','tan( ','  pi ','    ³   '),
-    ('<<', '(', ')', ' .','sqrt(','  e  ','HCF & LCM')
+    ('  1', '2', '3', ' -','cos(',' log(','    ²   ','Eigen Value'),
+    ('  0', 'C', '=', '+','tan( ','  pi ','    ³   ','HCF & LCM'),
+    ('<<', '(', ')', ' .','sqrt(','  e  ','exp(','Average Calculator')
 ]
 
 
@@ -211,7 +233,7 @@ for i, row in enumerate(button_values):
             unit_button.grid(row=i+2,column=j,padx=5,pady=5)
             continue
         if value == "HCF & LCM":
-            btn = tk.Button(root,text=value,padx=25,pady=25,command=open_hcf_lcm_window)
+            btn = tk.Button(root,text=value,padx=50,pady=20,command=lambda :open_window('hcflcm',"HCF & LCM Calculator"),font='Calibri 12')
             btn.grid(row=i+2,column=j)
             continue
 
@@ -221,9 +243,13 @@ for i, row in enumerate(button_values):
         elif value == 'C':
             btn.config(command=main.clear_display)
         elif value == "Determinant":
-            btn.config(command=matrix_determinant.determinant)
+            btn.config(text=' Determinant ',command=matrix.determinant)
         elif value == "Inverse":
-            btn.config(text='   Inverse    ',command= matrix_inverse.inverse)
+            btn.config(text='     Inverse      ',command= matrix.inverse)
+        elif value == "Eigen Value":
+            btn.config(text='Eigen Values',command= matrix.eigen_values)
+        elif value == "Average Calculator":
+            btn.config(text='Average Calculator',font='Calibri 13',padx=20,pady=17,command= lambda : open_window('avg','Average Calculator'))
         elif value == '<<':
             btn.config(command=main.backspace)
         else:
@@ -231,4 +257,14 @@ for i, row in enumerate(button_values):
         btn.grid(row=i + 2, column=j)   
         # row = i+ 2 , because 0th row is reserved for entry_display and 1st row is reserved for result_label Label.
 
+
+# Bind the destroy event of the root window to the on_root_destroy function
+def on_root_destroy(event):
+    global new_window
+    try:
+        while new_window.winfo_exists():
+            new_window.destroy()
+    except:
+        pass
+root.bind("<Destroy>", on_root_destroy)
 root.mainloop()
